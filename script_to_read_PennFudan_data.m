@@ -1,6 +1,6 @@
-baseDir = 'pas\';
-annotDir = [baseDir 'PennFudanPed\Annotation\'];
-imgDir = [baseDir 'PennFudanPed\PNGImages\'];
+baseDir = 'pas/';
+annotDir = [baseDir 'PennFudanPed/Annotation/'];
+imgDir = [baseDir 'PennFudanPed/PNGImages/'];
 
 % files = dir(annotDir); files(1:2) = [];
 % close all;
