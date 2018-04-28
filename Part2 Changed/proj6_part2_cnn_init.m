@@ -9,7 +9,7 @@ rng('default');
 rng(0);
 f=1/100;
 fc8InputDim = 4096; %10
-fc8OutputDim = 1; %15
+fc8OutputDim = 15; %15
 
 net.layers{end-1} = struct('type', 'conv', ...
                            'weights', {{f*randn(1,1,fc8InputDim,fc8OutputDim, 'single'), zeros(1, fc8OutputDim, 'single')}}, ...

@@ -56,8 +56,8 @@ net = proj6_part2_cnn_init();
 % if exist(opts.imdbPath, 'file')
 %   imdb = load(opts.imdbPath) ;
 % else
-  %imdb = proj6_part2_setup_data(net.meta.normalization.averageImage);
-  imdb = proj6_part2_setup_data();
+  imdb = proj6_part2_setup_data(net.meta.normalization.averageImage);
+  %imdb = proj6_part2_setup_data();
 %   mkdir(opts.expDir) ;
 %  save(opts.imdbPath, '-struct', 'imdb') ;
 % end
