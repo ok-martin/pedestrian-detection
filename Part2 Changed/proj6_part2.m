@@ -56,7 +56,8 @@ net = proj6_part2_cnn_init();
 % if exist(opts.imdbPath, 'file')
 %   imdb = load(opts.imdbPath) ;
 % else
-  imdb = proj6_part2_setup_data(net.meta.normalization.averageImage);
+  %imdb = proj6_part2_setup_data(net.meta.normalization.averageImage);
+  imdb = proj6_part2_setup_data();
 %   mkdir(opts.expDir) ;
 %  save(opts.imdbPath, '-struct', 'imdb') ;
 % end
@@ -86,7 +87,9 @@ function [im, labels] = getBatch(imdb, batch)
 
 %This function is where you should 'jitter' data.
 % --------------------------------------------------------------------
+%image_size = [224 224];
 im = imdb.images.data(:,:,:,batch) ;
+%im = imresize(im, image_size);
 labels = imdb.images.labels(1,batch) ;
 % Add jittering here before returning im
 

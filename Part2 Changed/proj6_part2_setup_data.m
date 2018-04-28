@@ -1,4 +1,4 @@
-function imdb = proj6_part2_setup_data(averageImage)
+function imdb = proj6_part2_setup_data()   %averageImage)
 %code for Computer Vision, Georgia Tech by James Hays
 
 % It's probably easiest if you start by copy/paste the contents of
@@ -37,13 +37,13 @@ imdb.images.labels = zeros(1, total_images, 'single');
 imdb.images.set    = zeros(1, total_images, 'uint8');
 image_counter = 1;
 
-categories = {'bedroom', 'coast', 'forest', 'highway', ...
-              'industrial', 'insidecity', 'kitchen', ...
-              'livingroom', 'mountain', 'office', 'opencountry', ...
-              'store', 'street', 'suburb', 'tallbuilding'};
+% categories = {'bedroom', 'coast', 'forest', 'highway', ...
+%               'industrial', 'insidecity', 'kitchen', ...
+%               'livingroom', 'mountain', 'office', 'opencountry', ...
+%               'store', 'street', 'suburb', 'tallbuilding'};
    
 
-%categories = {'cropped'};
+categories = {'cropped'};
           
 sets = {'train', 'test'};
 
@@ -55,8 +55,8 @@ fprintf('Each image will be resized to %d by %d\n', image_size(1),image_size(2))
 for set = 1:length(sets)
     for category = 1:length(categories)
         cur_path = fullfile( SceneJPGsPath, sets{set}, categories{category});
-        cur_images = dir( fullfile( cur_path, '*.jpg') );      %for original project 6 images
-        %cur_images = dir( fullfile( cur_path, '*.png') );       %for people
+        %cur_images = dir( fullfile( cur_path, '*.jpg') );      %for original project 6 images
+        cur_images = dir( fullfile( cur_path, '*.png') );       %for people
         
         
         if(set == 1)
@@ -81,7 +81,7 @@ for set = 1:length(sets)
                 cur_image = cat(3, cur_image, cur_image, cur_image);
             end
             cur_image = imresize(cur_image, image_size);
-            cur_image = cur_image - averageImage;
+            %cur_image = cur_image - averageImage;
                        
             % Stack images into a large image_size x 1 x total_images matrix
             % images.data
@@ -93,3 +93,6 @@ for set = 1:length(sets)
         end
     end
 end
+
+%avgImg = mean(imdb.images.data(:,:,:,:));
+%imdb.images.data = imdb.images.data(:,:,:,:) - avgImg;

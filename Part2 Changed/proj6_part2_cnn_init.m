@@ -5,10 +5,19 @@ function net = proj6_part2_cnn_init()
 %we will replace)
 net = load('../matconvnet-1.0-beta25/imagenet-vgg-f.mat') ;
 
+rng('default');
+rng(0);
+f=1/100;
+fc8InputDim = 4096; %10
+fc8OutputDim = 1; %15
 
+net.layers{end-1} = struct('type', 'conv', ...
+                           'weights', {{f*randn(1,1,fc8InputDim,fc8OutputDim, 'single'), zeros(1, fc8OutputDim, 'single')}}, ...
+                           'stride', 1, ...
+                           'pad', 0, ...
+                           'name', 'fc8') ;
 
-
-
+net.layers{end} = struct('type', 'softmaxloss') ;
 
 
 
