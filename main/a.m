@@ -1,8 +1,16 @@
 inputDir = '../output/test-images/obj3.jpg';
+model = '../output/mat/genius2.mat';
 
+% setup the program variables
+run vp_vars.m;
+
+% setup MatConvNet.
+run matconvnet/matlab/vl_setupnn;
+
+% obtain the trained svm
 svm = loadCompactModel('svm.mat');
 
-% obtain an image.
+% obtain an image
 im = imread(inputDir);
 
 
