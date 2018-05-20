@@ -31,8 +31,6 @@ detections = 0;
 det_bboxes = zeros(100,4);
 det_scores = zeros(100, 1);
 
-nonmax_treshold = 0.5;
-
 tic
 for x=1:steps:(width-win_w)
     for y=1:steps:(height-win_h)
@@ -65,15 +63,15 @@ end
 det_bboxes = det_bboxes(1:detections,:);
 det_scores = det_scores(1:detections,:);
 
-% perform non-max supression
-[det_bboxes, det_scores] = vp_nonmax_suppression(win_w, win_h, detections, det_bboxes, det_scores, nonmax_treshold);
-%[det_bboxes, det_scores] = selectStrongestBbox(det_bboxes, det_scores, 'OverlapThreshold', nonmax_treshold);
+
+[det_bboxes, det_scores] = vp_nonmax_suppression(win_w, win_h, detections, det_bboxes, det_scores);
+
 
 toc
 
-figure;
-im = insertObjectAnnotation(im2,'rectangle',det_bboxes,cellstr(num2str(det_scores*100)),'Color','green','TextBoxOpacity',0.99,'FontSize',12,'LineWidth',2);
-imshow(im);
+figure    
+im = insertObjectAnnotation(im2,'rectangle',det_bboxes,cellstr(num2str(det_scores*100)),'Color', 'red','TextBoxOpacity',0.1,'FontSize',12,'LineWidth',2);
+
 
 
 

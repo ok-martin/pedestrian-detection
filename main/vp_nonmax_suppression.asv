@@ -21,5 +21,5 @@ function [boxes, scores] = vp_nonmax_suppression(win_w, win_h, detections, boxes
     end
     % remove zero rows
     scores( ~any(scores, 2), : ) = [];
-    boxes( ~any(boxes, 2), : ) = [];
+    rect( ~any(rect, 2), : ) = [];
 end
