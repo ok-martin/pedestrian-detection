@@ -27,12 +27,15 @@ steps = 30;
 win_w = 101;
 win_h = 264;
 
+% maximum box overlap
+nonmax_treshold = 0.45;
+
+% pre-allocate space
 detections = 0;
 det_bboxes = zeros(100,4);
 det_scores = zeros(100, 1);
 
-nonmax_treshold = 0.5;
-
+% -------------------------------------------------------------------------
 tic
 for x=1:steps:(width-win_w)
     for y=1:steps:(height-win_h)
@@ -71,8 +74,9 @@ det_scores = det_scores(1:detections,:);
 
 toc
 
+% -------------------------------------------------------------------------
 figure;
-im = insertObjectAnnotation(im2,'rectangle',det_bboxes,cellstr(num2str(det_scores*100)),'Color','green','TextBoxOpacity',0.99,'FontSize',12,'LineWidth',2);
+im = insertObjectAnnotation(im,'rectangle',det_bboxes,cellstr(num2str(det_scores*100)),'Color','green','TextBoxOpacity',0.99,'FontSize',12,'LineWidth',2);
 imshow(im);
 
 
