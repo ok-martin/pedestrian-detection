@@ -24,23 +24,19 @@ net = vp_detect_model(model, prog.net.drop6, prog.net.drop7);
 height = size(im,1);
 width = size(im,2);
 steps = 30;
-person_w = 101;
-person_h = 264;
+win_w = 101;
+win_h = 264;
 
-rect_count = 0;
-rect = zeros(100,4);
-% crop = zeros(person_w,person_h);
-fprintf('%d %d\n',width, height);
-%im2col
+detections = 0;
+det_bboxes = zeros(100,4);
+det_scores = zeros(100, 1);
 
 tic
-for x=1:steps:(width-person_w)
-    for y=1:steps:(height-person_h)
+for x=1:steps:(width-win_w)
+    for y=1:steps:(height-win_h)
         
-        %fprintf('(%d %d), (%d %d)\n',x, y, x+person_w, y+person_h);
-        
-        crop = im(y:(y+person_h), x:(x+person_w),:,:);
-        
+        % crop
+        crop = im(y:(y+win_h), x:(x+win_w),:,:);
         img = crop;
         
         % make sure it is up to CNNs standard
@@ -48,103 +44,45 @@ for x=1:steps:(width-person_w)
         img_ = imresize(img_, net.meta.normalization.imageSize(1:2)); 
         img_ = bsxfun(@minus, img_, net.meta.normalization.averageImage); % cnn_mean vp_mean
     
-        
-        
-        % imshow(crop);
-        
-%         img_ = crop;
-%         img_ = im2single(img_);
-%         img_ = imresize(img_, net.meta.normalization.imageSize(1:2));
-%         img_ = bsxfun(@minus, img_, net.meta.normalization.averageImage);
-%         
-        
-        %img_ = bsxfun(@minus, img_, imdb.meta.vp_mean);
-        %img_ = bsxfun(@minus, img_, net.meta.normalization.averageImage);
-        
-        %im_ = im_ - net.meta.normalization.averageImage;
-        %imdb.meta.dataMean;
-        %net.meta.normalization.averageImage ;
-        
+        % extract CNN features
         res = vl_simplenn(net, img_);
+        % extract scores
         scores = squeeze(gather(res(end).x));
+        % select best scores
         [bestScore, best] = max(scores);
         if scores(1) > 0.7555 %&& strcmp(net.meta.classes{best}, 'people') == 1
-            rect_count = rect_count + 1;
-            rect(rect_count, :) = [x, y, person_w, person_h];
+            detections = detections + 1;
+            det_bboxes(detections, :) = [x, y, win_w, win_h];
+            det_scores(detections) = bestScore;
             disp(bestScore);
         end
     end
 end
+
+% remove zero rows
+det_bboxes = det_bboxes(1:detections,:);
+det_scores = det_scores(1:detections,:);
+
+det_scores = vp_nonmax_suppression(win_w, win_h, detections, det_bboxes, det_scores);
+
+
 toc
 
-figure;
-imshow(im);
-if(rect_count > 0)
-    for i=1:rect_count
-        rectangle('Position',rect(i, :), 'LineWidth',2, 'EdgeColor', 'red');
+im1 = im;
+im2 = im;
+
+figure(1);
+imshow(im1);
+if(detections > 0)
+    for i=1:detections
+        if det_scores(i) > 0
+            rectangle('Position',det_bboxes(i, :), 'LineWidth',2, 'EdgeColor', 'red');
+        end
     end
 end
 
-% im_ = im2single(im) ; % note: 255 range
-% im_ = imresize(im_, net.meta.normalization.imageSize(1:2)) ;
-% 
-% im_ = im_ - net.meta.normalization.averageImage ;
-% 
-% net.layers{end}.type = 'softmax';
-% 
-% % Run the CNN.
-% res = vl_simplenn(net, im_) ;
-
-
-
-
-
-
-%[outimg, bbox, score, probmap] = WinDetect(net, inputDir);
-% ConvnetDetect(net, inputDir);
-
-function ConvnetDetect(net, inputDir)
-    % Obtain and preprocess an image.
-    im = imread(inputDir) ;
-    im_ = single(im) ; % note: 255 range
-    im_ = imresize(im_, net.meta.normalization.imageSize(1:2)) ;
-    im_ = im_ - net.meta.normalization.averageImage ;
-    
-    % !!!!!!!!!!!!!! Change last layer to softmax
-    net.layers{end}.type = 'softmax';
-    
-    % Run the CNN.
-    res = vl_simplenn(net, im_) ;
-
-    % Show the classification result.
-    scores = squeeze(gather(res(end).x)) ;
-    [bestScore, best] = max(scores) ;
-    figure(1) ; clf ; imagesc(im) ;
-    title(sprintf('%s (%d), score %.3f',...
-       net.meta.classes.description{best}, best, bestScore)) ;
-end
-
-function [outimg, bbox, score, probmap] = WinDetect(net, inputDir)
-    % Test window_detector
-
-    imdb = load('imdb.mat');
-
-    % Change last layer to softmax
-    net.layers{end}.type = 'softmax';
-
-    % Ensure net stores imdb mean
-    net.meta.dataMean = imdb.meta.dataMean;
-
-    img = imread(inputDir);
-    img = im2single(img);
-
-    stride = 10;
-    thresh = 0.5;
-    nms = 1;
-    windowsize = [102, 265];
-    [outimg, bbox, score, probmap] = window_detector(img, net, stride, thresh, windowsize, nms);
-
-end
-
+figure(2);
+im2 = insertObjectAnnotation(im2,'rectangle',det_bboxes,cellstr(num2str(det_scores*100)),'Color', 'red','TextBoxOpacity',0.1,'FontSize',12,'LineWidth',2);
+imshow(im2);
 
 
