@@ -4,7 +4,7 @@
 run vp_vars.m;
 
 % directories
-inputDir = '../output/test-images/obj2.png';
+inputDir = '../output/test-images/obj3.jpg';
 model = '../output/mat/genius2.mat'; %'matconvnet/imagenet-vgg-f.mat';
 
 % setup MatConvNet.
@@ -21,11 +21,11 @@ im = imread(inputDir);
 net = vp_detect_model(model, prog.net.drop6, prog.net.drop7);
 
 % -------------------------------------------------------------------------
-
-% image
+% 640x480 
 im_height = size(im,1);
 im_width = size(im,2);
-
+    
+% -------------------------------------------------------------------------   
 % maximum box overlap
 nonmax_treshold = 0.48;
 
@@ -89,32 +89,41 @@ tic
 %     end
 % end
 
-input_image = im;
 win_x = 102; 
 win_y = 264;
-spacingx = win_x/2; 
-spacingy = win_y/2;
-windows = ((im_width-win_x)/spacingx)*((im_height-win_y)/spacingy);
-for index = 1:windows  
-    
-    maxPerRow = floor((im_width -win_x+spacingx) / spacingx);
-    maxRows = floor((im_height - win_y+spacingy)/ spacingy);
-    currentRow = floor(index / (maxPerRow));
-    
+stride_x = win_x/2; 
+stride_y = win_y/2;
+window = -1;
+
+maxPerRow = floor((im_width -win_x+stride_x) / stride_x);
+maxRows = floor((im_height - win_y+stride_y)/ stride_y);
+
+while window > -2
+    window = window + 1;
+
+    currentRow = floor(window / (maxPerRow));
     if (currentRow < maxRows)
         
-        cutX = (mod(index,maxPerRow)*spacingx);
-        cutY = (currentRow * spacingy);
+        cutX = (mod(window, maxPerRow)*stride_x);
+        cutY = (currentRow * stride_y);
             
         scores = cnn_detect(im(cutY+1:(cutY+win_y),cutX+1:(cutX+win_x),:), net);
-        if scores(1) > 0.7 %&& strcmp(net.meta.classes{best}, 'people') == 1
+        if scores(1) > 0.7
+            % mark detection
             detections = detections + 1;
             det_bboxes(detections, :) = [cutX, cutY, win_x, win_y];
             det_scores(detections) = scores(1);
-            %disp(bestScore);
+            
+            % decrease the stride
+
+        else
+            % increase the stride
+            window = window + 1;
         end
+        
     else
-        disp(index);
+        disp(window);
+        window = -2;
     end
 end
 
