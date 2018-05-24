@@ -4,7 +4,7 @@
 run vp_vars.m;
 
 % directories
-inputDir = '../output/test-images/obj3.jpg';
+inputDir = '../output/test-images/obj1.png';
 model = '../output/mat/genius2.mat'; %'matconvnet/imagenet-vgg-f.mat';
 
 % setup MatConvNet.
@@ -89,39 +89,49 @@ tic
 %     end
 % end
 
+% window size
 win_x = 102; 
 win_y = 264;
+% stride size
 stride_x = win_x/2; 
 stride_y = win_y/2;
+% keep track of the position within the image
 window = -1;
+% max number of rows
+max_ys = floor((im_height - win_y+stride_y)/ stride_y);
+% max number of columns
+max_xs = floor((im_width -win_x+stride_x) / stride_x);
 
-maxPerRow = floor((im_width -win_x+stride_x) / stride_x);
-maxRows = floor((im_height - win_y+stride_y)/ stride_y);
-
+% while there is still more windows
 while window > -2
+    % which position in the image are we up to
     window = window + 1;
 
-    currentRow = floor(window / (maxPerRow));
-    if (currentRow < maxRows)
+    % get current row
+    row = floor(window / (max_xs));
+    
+    % if within the image
+    if (row < max_ys)
         
-        cutX = (mod(window, maxPerRow)*stride_x);
-        cutY = (currentRow * stride_y);
+        % get x, y coordinates in the image
+        x = (mod(window, max_xs)*stride_x);
+        y = (row * stride_y);
             
-        scores = cnn_detect(im(cutY+1:(cutY+win_y),cutX+1:(cutX+win_x),:), net);
+        scores = cnn_detect(im(y+1:(y+win_y),x+1:(x+win_x),:), net);
         if scores(1) > 0.7
             % mark detection
             detections = detections + 1;
-            det_bboxes(detections, :) = [cutX, cutY, win_x, win_y];
+            det_bboxes(detections, :) = [x, y, win_x, win_y];
             det_scores(detections) = scores(1);
             
             % decrease the stride
 
         else
-            % increase the stride
+            % increase the stride, skip a window
             window = window + 1;
         end
-        
     else
+        % out of bounds, completed the window
         disp(window);
         window = -2;
     end
