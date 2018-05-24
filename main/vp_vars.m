@@ -3,16 +3,21 @@
 % file structure
 % Data to be pre-processed
 prog.predata.pnn = fullfile('..', 'data', 'data-PennFudanPed', '');
-% MatConvNet
-prog.files.matconvnet = fullfile('matconvnet', 'matlab', 'vl_setupnn.m');
 
-% Data for learning
+% MatConvNet & Vision Toolboxes
+prog.files.matconvnet = fullfile('libs', 'matconvnet', 'matlab', 'vl_setupnn.m');
+prog.files.vlfelat = fullfile('libs', 'vlfeat', 'toolbox', 'vl_setup.m');
+
+% Learning Phase: Image Data
 prog.files.inImg = fullfile('..', 'input', 'images');
 prog.files.inPeople = fullfile(prog.files.inImg, 'people');
 prog.files.inNotppl = fullfile(prog.files.inImg, 'not-people');
-prog.files.inImgDb = fullfile('imdb.mat');
-prog.files.inMat = fullfile('..', 'input', 'mat', 'imagenet-vgg-m.mat');
 
+% Learning Phase: Image Database
+prog.files.inImgDb = fullfile('imdb.mat');
+
+% Learning Phase: The Pre-trained Model
+prog.net.inMat = fullfile('..', 'input', 'mat', 'imagenet-vgg-m.mat');
 prog.net.drop6 = 16;
 prog.net.drop7 = 19;
 

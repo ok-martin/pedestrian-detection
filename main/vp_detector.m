@@ -8,7 +8,7 @@ inputDir = '../output/test-images/obj1.png';
 model = '../output/mat/genius2.mat'; %'matconvnet/imagenet-vgg-f.mat';
 
 % setup MatConvNet.
-run matconvnet/matlab/vl_setupnn;
+run(prog.files.matconvnet);
 
 % load the image database
 imdb = load(prog.files.inImgDb);
@@ -153,7 +153,7 @@ im = insertObjectAnnotation(im,'rectangle',det_bboxes,cellstr(num2str(det_scores
 imshow(im);
 
 
-   
+
 function scores = cnn_detect(im, net)    
     % make sure it is up to CNNs standard
     img_ = single(im); % 255  range

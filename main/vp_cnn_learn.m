@@ -5,8 +5,7 @@ function vp_cnn_learn(varargin)
     
     % start matconvnet
     run(prog.files.matconvnet);
-    %run(fullfile('vlfeat-0.9.20', 'toolbox', 'vl_setup.m'));
-    
+
     % training parameters for the CNN
     trainOpts = prog.trainOpts;    
     trainOpts = vl_argparse(trainOpts, varargin);
