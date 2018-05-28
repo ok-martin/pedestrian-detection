@@ -1,12 +1,13 @@
-% prog.imgSize = [224 224];
+% Detection phase
+prog.detect.nonmax_treshold = 0.48;
 
 % file structure
 % Data to be pre-processed
 prog.predata.pnn = fullfile('..', 'data', 'data-PennFudanPed', '');
 
 % MatConvNet & Vision Toolboxes
-prog.files.matconvnet = fullfile('libs', 'matconvnet', 'matlab', 'vl_setupnn.m');
-prog.files.vlfelat = fullfile('libs', 'vlfeat', 'toolbox', 'vl_setup.m');
+prog.files.matconvnet = fullfile('libs', 'matconvnet-gpu', 'matlab', 'vl_setupnn.m');
+prog.files.vlfeat = fullfile('libs', 'vlfeat', 'toolbox', 'vl_setup.m');
 
 % Learning Phase: Image Data
 prog.files.inImg = fullfile('..', 'input', 'images');

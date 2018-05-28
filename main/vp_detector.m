@@ -9,22 +9,25 @@ model = '../output/mat/genius2.mat'; %'matconvnet/imagenet-vgg-f.mat';
 
 % setup MatConvNet.
 run(prog.files.matconvnet);
+run(prog.files.vlfeat);
 
 % load the image database
 imdb = load(prog.files.inImgDb);
 
 % obtain an image.
 im = imread(inputDir);
-
+%im = imresize(im, 0.4);
 % -------------------------------------------------------------------------
 % Prepare the model
-net = vp_detect_model(model, prog.net.drop6, prog.net.drop7);
+net = vp_prep_detection_model(prog.files.outMat, 1, prog.net.drop6, prog.net.drop7);
 
 % -------------------------------------------------------------------------
 % 640x480 
 im_height = size(im,1);
 im_width = size(im,2);
-    
+
+
+
 % -------------------------------------------------------------------------   
 % maximum box overlap
 nonmax_treshold = 0.48;
@@ -88,10 +91,51 @@ tic
 %         end
 %     end
 % end
-
+% -------------------------------------------------------------------------
 % window size
-win_x = 102; 
-win_y = 264;
+% win_x = im_width/3; 
+% win_y = im_height/3;
+% stride_x = floor(win_x*0.7); 
+% stride_y = floor(win_y*0.7);
+% window = -1;
+% max_ys = floor((im_height - win_y+stride_y)/ stride_y);
+% max_xs = floor((im_width - win_x+stride_x) / stride_x);
+% 
+% % while there is still more windows
+% while window > -2
+%     % which position in the image are we up to
+%     window = window + 1;
+% 
+%     % get current row
+%     row = floor(window / (max_xs));
+%     
+%     % if within the image
+%     if (row < max_ys)
+%         
+%         % get x, y coordinates in the image
+%         x = (mod(window, max_xs)*stride_x);
+%         y = (row * stride_y);
+%         disp(x);
+%         disp(y);
+%         scores = cnn_detect(im(y+1:(y+win_y),x+1:(x+win_x),:), net);
+%         if scores(1) > 0.7
+%             figure
+%             imshow(im(y+1:(y+win_y),x+1:(x+win_x),:));
+%         end
+%     else
+%         % out of bounds, completed the window
+%         disp(window);
+%         window = -2;
+%     end
+% end
+
+
+
+
+% -------------------------------------------------------------------------
+% window size
+win_x = 102; %102
+win_y = 264; %264
 % stride size
 stride_x = win_x/2; 
 stride_y = win_y/2;
@@ -132,10 +176,11 @@ while window > -2
         end
     else
         % out of bounds, completed the window
-        disp(window);
+        fprintf('windows: %d\n', window);
         window = -2;
     end
 end
+
 
 % remove zero rows
 det_bboxes = det_bboxes(1:detections,:);
