@@ -1,4 +1,4 @@
-# pedestrian-detection
+# Pedestrian Detection in Images and Videos
 
 Matlab GUI & implementation, training and testing of CNNs to detect pedestrians . Under 1s detection, 80% accuracy. (1 Sliding Window VGG) (2 HoG SVM VGG) (3 SSD)
 
